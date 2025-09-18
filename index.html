@@ -1,0 +1,662 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Seg4Diff: Unveiling Open-Vocabulary Segmentation in Text-to-Image Diffusion Transformers</title>
+
+    <!-- Favicon references -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/jpeg" href="favicon.jpg">
+    <link rel="apple-touch-icon" href="favicon.jpg">
+
+    <meta
+        content="Seg4Diff: Unveiling Open-Vocabulary Segmentation in Text-to-Image Diffusion Transformers"
+        name="description" />
+    <meta
+        content="Seg4Diff: Unveiling Open-Vocabulary Segmentation in Text-to-Image Diffusion Transformers"
+        property="og:title" />
+    <meta
+        content="Seg4Diff: Unveiling Open-Vocabulary Segmentation in Text-to-Image Diffusion Transformers"
+        property="og:description" />
+    <meta
+        content="Seg4Diff: Unveiling Open-Vocabulary Segmentation in Text-to-Image Diffusion Transformers"
+        property="twitter:title" />
+    <meta
+        content="Seg4Diff: Unveiling Open-Vocabulary Segmentation in Text-to-Image Diffusion Transformers"
+        property="twitter:description" />
+    <meta property="og:type" content="website" />
+    <meta content="summary_large_image" name="twitter:card" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css"
+        crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&family=Varela+Round&display=swap"
+        rel="stylesheet">
+    <link href="style.css?" rel="stylesheet" type="text/css" />
+
+    <!-- 🔎 Added minimal CSS for click‑to‑zoom lightbox -->
+    <style>
+      /* make images clearly zoomable */
+      img.zoomable { cursor: zoom-in; transition: transform .2s ease; }
+
+      /* fullscreen overlay */
+      .lightbox-overlay {
+        position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+        background: rgba(0,0,0,.9); z-index: 10000;
+      }
+      .lightbox-overlay.active { display: flex; }
+      .lightbox-overlay img { max-width: 95vw; max-height: 95vh; box-shadow: 0 10px 40px rgba(0,0,0,.6); border-radius: 8px; }
+      /* show zoom-out cursor while overlay is open */
+      .lightbox-overlay, .lightbox-overlay * { cursor: zoom-out; }
+
+      /* prevent background scroll when overlay is open */
+      body.no-scroll { overflow: hidden; }
+    </style>
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$','$$'], ['\\[','\\]']]
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="container">
+            <button class="hamburger" aria-label="Toggle navigation">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+            <nav class="main-nav">
+                <ul class="nav-links">
+                    <li><a href="#abstract">Overview</a></li>
+                    <li><a href="#analysis">Analysis</a></li>
+                    <li><a href="#framework">Zero-shot OVSS</a></li>
+                    <li><a href="#mask-alignment">Fine-tuning with MAGNET</a></li>
+                    <li><a href="#experiments">Experiments</a></li>
+                    <li><a href="#conclusion">Conclusion</a></li>
+                    <li><a href="#citation">Citation</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <div class="hero-section">
+        <div class="container">
+            <div class="title-row">
+                <div class="title-flex">
+                    <div class="title-text-block">
+                        <h1 class="title">
+                            <img src="images/icon.png" alt="Seg4Diff icon" style="height: 1.5em; vertical-align: middle; margin-right: 0.1em;">
+                            <span class="gradient-text">Seg4Diff</span>: Unveiling Open-Vocabulary Segmentation<br>in Text-to-Image Diffusion Transformers
+                        </h1>
+                        <h1 class="subtitle">arXiv 2025</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="base-row author-row">
+                <div class="base-col author-col">
+                    <a href="https://kchyun.github.io/" target="_blank" class="author-text">
+                        Chaehyun Kim<sup>1</sup>
+                    </a>
+                </div>
+                <div class="base-col author-col">
+                    <a href="https://hsshin98.github.io/" target="_blank" class="author-text">
+                        Heeseong Shin<sup>1</sup>
+                    </a>
+                </div>
+                <div class="base-col author-col">
+                    <a href="https://github.com/eunbeen-hong" target="_blank" class="author-text">
+                        Eunbeen Hong<sup>1</sup>
+                    </a>
+                </div>
+                <div class="base-col author-col">
+                    <a href="https://yoon-heez.github.io/" target="_blank" class="author-text">
+                        Heeji Yoon<sup>1</sup>
+                    </a>
+                </div>
+            </div>
+            <div class="base-row author-row">
+                <div class="base-col author-col">
+                    <a href="https://anuragarnab.github.io/" target="_blank" class="author-text">
+                        Anurag Arnab
+                    </a>
+                </div>
+                <div class="base-col author-col">
+                    <a href="https://phseo.github.io/" target="_blank" class="author-text">
+                        Paul Hongsuck Seo<sup>2</sup>
+                    </a>
+                </div>
+                <div class="base-col author-col">
+                    <a href="https://sunghwanhong.github.io/" target="_blank" class="author-text">
+                        Sunghwan Hong<sup>3</sup>
+                    </a>
+                </div>
+                <div class="base-col author-col">
+                    <a href="https://cvlab.kaist.ac.kr/members/faculty" target="_blank" class="author-text">
+                        Seungryong Kim<sup>1</sup>
+                    </a>
+                </div>
+            </div>
+            <div class="base-row author-row">
+                <div class="base-col author-col affiliations">
+                    <sup>1</sup>KAIST AI &nbsp;&nbsp; <sup>2</sup>Korea University &nbsp;&nbsp; <sup>3</sup>ETH Zürich &nbsp;&nbsp;
+                    <br>
+                    <sup>*</sup>Co-first authors &nbsp;&nbsp; <sup>&dagger;</sup>Co-corresponding authors
+                </div>
+            </div>
+            <div class="link-labels base-row">
+                <div class="base-col icon-col"><a href="" target="_blank"
+                        class="link-block">
+                        <i class="fa fas fa-file-text main-icon" style="font-size: 60px"></i>
+                        <strong class="link-labels-text">Paper</strong>
+                    </a></div>
+                <div class="base-col icon-col"><a href='' class="link-block">
+                        <i class="fa fa-github main-icon" style="font-size: 60px"></i>
+                        <strong class="link-labels-text">Code</strong>
+                    </a></div>
+                <div class="base-col icon-col"><a href="#citation" class="link-block">
+                        <i class="fa fa-graduation-cap main-icon" style="font-size: 60px"></i>
+                        <strong class="link-labels-text">Citation</strong>
+                    </a></div>
+            </div>
+
+        </div>
+    </div>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="tldr">
+                <b>TL;DR</b>: Seg4Diff analyzes internal mechanisms of multi-modal diffusion transformers to identify semantic grounding expert layers that naturally yield high-quality zero-shot segmentation masks, then enhances them through lightweight LoRA fine-tuning to improve both segmentation and generation quality.
+            </div>
+
+            <div id="abstract" class="base-row section">
+                <h2>Overview</h2>
+                <!-- <p class="paragraph">
+                    <Strong>Seg4Diff</Strong> is a systematic analysis framework for multi-modal diffusion transformers (MM-DiTs) that focuses on understanding how specific layers propagate semantic information and influence generation quality. By comprehensive analysis, we identify a <em>semantic grounding expert layer</em> that consistently aligns text tokens with spatially coherent image regions, naturally yielding high-quality zero-shot segmentation masks. We then introduce a lightweight LoRA fine-tuning method to enhance the semantic grouping capabilities of these layers to improve segmentation performance and image fidelity.
+                </p> -->
+                <div class="image-container">
+                        <div class="image-content">
+                            <img src="images/teaser.png" class="img large-image" alt="Seg4Diff teaser">
+                        </div>
+    
+                        <p class="image-caption">We introduce <b>Seg4Diff</b>, a systematic framework designed to <b>analyze and enhance</b> the emergent semantic grounding capabilities of multi-modal diffusion transformer (MM-DiT) blocks in text-to-image diffusion transformers (DiTs). Here, <b>semantic grounding expert</b> refers to a specific MM-DiT block responsible for establishing semantic alignment between text and image features.</p>
+                </div>
+            </div>
+
+            <section id="analysis" class="section">
+                <h2>Analysis</h2>
+
+                <p>We conduct an in-depth analysis of the joint attention mechanism in MM-DiT models to understand how text and image tokens interact. We characterize the distribution of attention scores to discover active cross-modal interaction, and complement this with attention feature similarity measures to assess which modality exerts greater influence on output representations.</p>
+                
+                <h3>Attention Score Analysis</h3>
+                <div class="image-container">
+                    <div class="image-content">
+                        <img src="images/mm-attn.png" class="img large-image" alt="Method diagram">
+                        <p style="margin-top:18px; margin-bottom:18px;"><b>Multi-modal attention mechanism</b>: (a) Conceptual visualization of the attention map. (b–c) Ratios of attention assigned to image vs. text tokens. The dotted line denotes the ratio under uniform attention. Higher cross-modal proportions are observed in I2T and T2I attention.</p>
+                    </div>
+                </div>
+
+                <h3>Attention Feature Analysis</h3>
+                <div class="image-container grid-2x2">
+                    <div class="grid-item top-left">
+                        <div class="image-content">
+                            <img src="images/feature_pca.png" class="img large-image" alt="Feature PCA analysis">
+                        </div>
+                    </div>
+                    <div class="grid-item top-right">
+                        <div class="text-content">
+                            <p><b>PCA visualization of query, key and value projections.</b> PCA results demonstrate that some layers exhibit strong positional bias, whereas some layers show clear semantic groups.</p>
+                        </div>
+                    </div>
+                    <div class="grid-item bottom-left">
+                        <div class="image-content">
+                            <img src="images/attn_norm_split_norm.png" class="img large-image" alt="Attention normalization analysis">
+                        </div>
+                    </div>
+                    <div class="grid-item bottom-right">
+                        <div class="text-content">
+                            <p><b>Attention feature norm analysis.</b> The L2 norm of the value projection for image and text tokens reveals that certain layers exhibit significantly stronger value magnitudes for text tokens compared to image tokens.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Essential Role of I2T Attention in Text-to-Image Generation</h3>
+                <div class="image-container">
+                    <div class="image-content">
+                        <img src="images/perturb_fig.png" class="img large-image" alt="Feature PCA analysis">
+                        <p style="margin-top:20px; margin-bottom:30px;"><b>Effect of I2T attention perturbation.</b> Blurring the I2T regions of specific attention layers severely disrupts text–image alignment, showing that these layers are crucial for injecting semantic content into images. </p>
+                        <img src="images/guidance_figure.png" class="img large-image" alt="Feature PCA analysis">
+                        <p style="margin-top:20px; margin-bottom:10px;"><b>Effect of perturbed I2T guidance.</b> By turning this effect into a simple guidance strategy, we achieve images with higher fidelity and stronger alignment to the prompt.</p>
+                    </div>
+                </div>
+
+                <p>The analysis reveals that specific layers consistently align textual semantics with contiguous image regions, demonstrating emergent semantic grounding capability. These layers naturally yield high-quality zero-shot segmentation masks without explicit training for segmentation tasks.</p>
+
+
+            </section>
+
+            <section id="framework" class="section">
+                <h2>Zero-shot OVSS Framework</h2>
+                <p>We propose a zero-shot framework for semantic grounding in multi-modal diffusion transformers. Given an input image and text prompt, we extract I2T attention to generate a zero-shot segmentation mask.</p>
+                <div class="image-container">
+                    <div class="image-content" style="margin-bottom:30px;">
+                        <img src="images/zeroshot_arch.png" class="img large-image" alt="Seg4Diff framework illustration">
+                        <p class="margin-top:18px"><b>Open-vocabulary semantic segmentation scheme in our framework.</b> We generate segmentation masks by interpreting the I2T attention scores, where the score map for each text token serves as a direct measure of image-text similarity to produce the final prediction.</p>
+                    </div>
+                    <div class="two-col" style="margin-top:-40px;">
+                        <div class="col-left"> 
+                            <img src="images/attn_norm_split_seg.png" class="img large-image" alt="Seg4Diff framework illustration">
+                        </div>
+                        <div class="col-right">
+                            <p><b>Open-vocabulary semantic segmentation performance across layers.</b> Semantic grounding quality varies across MM-DiT layers, peaking in the middle blocks and specifically at the 9th layer. This trend is similar to what we've found in previous analysis, where semantic grounding is stronger in certain layers. We refer to those layer as <b><i>semantic grounding expert layers</i></b>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Decomposing Multi-modal Attention</h3>
+                <div class="image-container">
+                    <div class="image-content">
+                        <img src="images/attn_score_analysis.png" class="img large-image" alt="Seg4Diff framework illustration">
+                        <p class="margin-top:20px; margin-bottom:10px;"><b>Deeper analysis on multi-modal attention mechanism.</b> (a) multi-granularity behavior of token-level and head-level attention, and (b) emergent semantic grouping on &lt;pad&gt; tokens in unconditional generation scenario.</p>
+                    </div>
+                </div>
+
+            </section>
+
+            <section id="mask-alignment" class="section">
+                <h2>Mask Alignment for Segmentation and Generation (MAGNET)</h2>
+
+                <div class="image-container">
+                    <div class="image-content">
+                        <img src="images/train_arch.png" class="img large-image" alt="Training scheme">
+                        <p class="margin-top:18px; margin-bottom:18px;"><b>Lightweight fine-tuning pipeline via mask alignment.</b> We introduce a simple yet effective <b><i>mask alignment for segmentation and generation (MAGNET)</i></b> strategy that strengthens the I2T attention maps in the semantic grounding expert layer during additional diffusion fine-tuning with a LoRA adapter.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="experiments" class="section">
+                <h2>Experiments</h2>
+
+                <p>We evaluate Seg4Diff on multiple benchmarks to demonstrate the effectiveness of our method on both segmentation and generation.</p>
+
+                <h3>Seg4Diff for Segmentation</h3>
+                <div class="image-container">
+                    <img src="images/seg_qual.png" class="img large-image" alt="Qualitative results">
+                    <p class="image-caption"><b>Qualitative results of Seg4Diff on segmentation tasks.</b></p>
+                </div>
+                <!-- <div class="image-container">
+                    <img src="images/seg_quan.png" class="img large-image" alt="Qualitative results">
+                    <p class="image-caption"><b>Segmentation performance on Pascal VOC, COCO, and ADE20K datasets.</b> Seg4Diff demonstrates competitive zero-shot segmentation performance, where LoRA fine-tuning consistently improves segmentation accuracy.</p>
+                </div> -->
+
+
+                <div class="table-container">
+                    <table class="advantages-table">
+                        <thead>
+                            <tr>
+                                <th class="model-col">Model</th>
+                                <th>Arch.</th>
+                                <th>Train.</th>
+                                <th >VOC20</th>
+                                <th >Object</th>
+                                <th >PC59</th>
+                                <th >ADE</th>
+                                <th >City</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="model-col border-col">ProxyCLIP</td><td class="border-col">CLIP-H/14</td><td class="border-col">-</td><td>83.3</td><td>49.8</td><td>39.6</td><td>24.2</td><td>42.0</td></tr>
+                            <tr><td class="model-col border-col">CorrCLIP</td><td class="border-col">CLIP-H/14</td><td class="border-col">-</td><td>91.8</td><td>52.7</td><td>47.9</td><td>28.8</td><td>49.9</td></tr>
+                            <tr><td class="model-col border-col">DiffSegmenter</td><td class="border-col">SD1.5</td><td class="border-col">-</td><td>66.4</td><td>40.0</td><td>45.9</td><td>24.2</td><td>12.4</td></tr>
+                            <tr><td class="model-col border-col">iSeg</td><td class="border-col">SD1.5</td><td class="border-col">-</td><td>82.9</td><td>57.3</td><td>39.2</td><td>24.2</td><td>24.8</td></tr>
+                            <tr class="highlight-row"><td class="model-col border-col"><strong>Seg4Diff</strong></strong></td><td class="border-col">SD3</td><td class="border-col">-</td><td>89.2</td><td><u>62.0</u></td><td>49.0</td><td>34.2</td><td><strong>26.5</strong></td></tr>
+                            <tr class="highlight-row"><td class="model-col border-col"><strong>Seg4Diff</strong></td><td class="border-col">SD3.5</td><td class="border-col">-</td><td>86.1</td><td>57.8</td><td>43.4</td><td>30.7</td><td>23.8</td></tr>
+                            <tr class="highlight-row"><td class="model-col border-col"><strong>Seg4Diff</strong></td><td class="border-col">Flux.1-dev</td><td class="border-col">-</td><td>83.1</td><td>50.6</td><td>38.2</td><td>23.9</td><td>17.1</td></tr>
+                            <tr class="highlight-row"><td class="model-col border-col"><strong>Seg4Diff + MAGNET</strong></td><td class="border-col">SD3</td><td class="border-col">SA-1B</td><td><u>89.1</u></td><td><u>62.0</u></td><td><u>49.1</u></td><td><u>34.7</u></td><td>25.4</td></tr>
+                            <tr class="highlight-row"><td class="model-col border-col"><strong>Seg4Diff + MAGNET</strong></td><td class="border-col">SD3</td><td class="border-col">COCO</td><td><strong>89.8</strong></td><td><strong>62.9</strong></td><td><strong>51.2</strong></td><td><strong>35.2</strong></td><td><u>26.0</u></td></tr>
+                        </tbody>
+                    </table>
+                    <p class="image-caption"><b>(a) Open-vocabulary semantic segmentation performance.</b> Cross-modal alignment in the I2T attention maps of the semantic grounding expert layer yields competitive results, further enhanced by mask alignment.</p>
+                </div>
+                <div class="table-container">
+                    <table class="advantages-table">
+                        <thead>
+                            <tr>
+                                <th class="model-col">Model</th>
+                                <th>Arch.</th>
+                                <th>Train.</th>
+                                <th>VOC21</th>
+                                <th>PC59</th>
+                                <th>Object</th>
+                                <th>Stuff-27</th>
+                                <th>City</th>
+                                <th>ADE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="model-col border-col">ReCO</td><td class="border-col">CLIP-L/14</td><td class="border-col">-</td><td>25.1</td><td>19.9</td><td>15.7</td><td>26.3</td><td>19.3</td><td>11.2</td></tr>
+                            <tr><td class="model-col border-col">MaskCLIP</td><td class="border-col">CLIP-B/16</td><td class="border-col">-</td><td>38.8</td><td>23.6</td><td>20.6</td><td>19.6</td><td>10.0</td><td>9.8</td></tr>
+                            <tr><td class="model-col border-col">MaskCut</td><td class="border-col">DINO-B/8</td><td class="border-col">-</td><td>53.8</td><td>43.4</td><td>30.1</td><td>41.7</td><td>18.7</td><td>35.7</td></tr>
+                            <tr><td class="model-col border-col">DiffSeg</td><td class="border-col">SD1.5</td><td class="border-col">-</td><td>49.8</td><td>48.8</td><td>23.2</td><td>44.2</td><td>16.8</td><td>37.7</td></tr>
+                            <tr><td class="model-col border-col">DiffCut</td><td class="border-col">SSD-1B</td><td class="border-col">-</td><td><strong>62.0</strong></td><td><strong>54.1</strong></td><td>32.0</td><td>46.1</td><td><strong>28.4</strong></td><td>42.4</td></tr>
+                            <tr class="highlight-row"><td class="model-col border-col"><strong>Seg4Diff</strong></td><td class="border-col">SD3</td><td class="border-col">-</td><td>54.9</td><td>52.6</td><td>38.5</td><td>49.7</td><td>24.2</td><td>44.9</td></tr>
+                            <tr class="highlight-row"><td class="model-col border-col"><strong>Seg4Diff</strong></td><td class="border-col">SD3.5</td><td class="border-col">-</td><td>52.3</td><td>52.9</td><td>36.8</td><td>47.1</td><td>24.2</td><td>41.5</td></tr>
+                            <tr class="highlight-row"><td class="model-col border-col"><strong>Seg4Diff + MAGNET</strong></td><td class="border-col">SD3</td><td class="border-col">SA-1B</td><td>55.1</td><td>52.8</td><td><strong>39.0</strong></td><td><u>50.8</u></td><td>24.2</td><td><u>45.0</u></td></tr>
+                            <tr class="highlight-row"><td class="model-col border-col"><strong>Seg4Diff + MAGNET</strong></td><td class="border-col">SD3</td><td class="border-col">COCO</td><td><u>56.1</u></td><td><u>53.5</u></td><td><u>38.8</u></td><td><strong>53.5</strong></td><td><u>24.4</u></td><td><strong>45.4</strong></td></tr>
+                        </tbody>
+                    </table>
+                    <p class="image-caption"><b>(b) Unsupervised segmentation performance.</b> Although not specifically designed for unsupervised semantic segmentation, exploiting the emergent semantic grouping of <code>&lt;pad&gt;</code> tokens in the I2T attention maps achieves competitive results.</p>
+                </div>
+
+                <h3>Seg4Diff for Image Generation</h3>
+                <div class="slideshow-container">
+                    <div class="slideshow">
+                        <div class="slide">
+                            <img src="images/gen_qual_slide/Slide1.png"
+                                class="comparison-slideshow-image" alt="Attention analysis">
+                        </div>
+                        
+                        <div class="slide">
+                            <img src="images/gen_qual_slide/Slide2.png"
+                                class="comparison-slideshow-image" alt="Layer analysis">
+                        </div>
+
+                        <div class="slide">
+                            <img src="images/gen_qual_slide/Slide3.png"
+                                class="comparison-slideshow-image" alt="LoRA analysis">
+                        </div>
+
+                        <div class="slide">
+                            <img src="images/gen_qual_slide/Slide4.png"
+                                class="comparison-slideshow-image" alt="Qualitative results">
+                        </div>
+
+                        <div class="slide">
+                            <img src="images/gen_qual_slide/Slide5.png"
+                                class="comparison-slideshow-image" alt="Qualitative results">
+                        </div>
+
+                        <div class="slide">
+                            <img src="images/gen_qual_slide/Slide6.png"
+                                class="comparison-slideshow-image" alt="Qualitative results">
+                        </div>
+                    </div>
+                    <p class="slideshow-caption"><b>Qualitative results of Seg4Diff across different prompts.</b></p>
+
+                    <button class="slideshow-nav prev" onclick="changeSlide(-1)">❮</button>
+                    <button class="slideshow-nav next" onclick="changeSlide(1)">❯</button>
+                    
+                    <div class="slideshow-controls">
+                        <button class="play-pause" onclick="togglePlayPause()">
+                            <i class="fa fa-pause"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="image-container">
+                    <div class="image-content">
+                            <img src="images/gen_attn_qual_h.png" class="img large-image" alt="Qualitative results with atteention visualization">
+                    </div>
+                    <p class="image-caption"><b>Qualitative results of Mask Alignment.</b> Mask alignment improves structural coherence and alignment between image and text.</p>
+                </div>
+                <!-- <div class="image-container">
+                    <img src="images/gen_quan.png" class="img large-image" alt="Quantitative results">
+                    <p class="image-caption"><b>CLIPScore and T2I-CompBench++ benchmarks for image generation.</b> Seg4Diff with LoRA fine-tuning consistently improves generation quality, especially on image-text alignment and object-centric attributes.</p>
+                </div> -->
+
+                <div class="table-container">
+                    <table class="advantages-table">
+                        <thead>
+                            <tr>
+                                <th class="model-col border-col">Method</th>
+                                <th class="border-col">Training</th>
+                                <th>Pick-a-Pic</th>
+                                <th>COCO</th>
+                                <th>SA-1B</th>
+                                <th>Mean</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="model-col border-col">Baseline</td><td class="border-col">--</td><td>27.0252</td><td>26.0638</td><td>28.3422</td><td>27.1437</td></tr>
+                            <tr class="highlight-row"><td class="model-col border-col"><strong>+ MAGNET</strong></td><td class="border-col">SA-1B</td><td><strong>27.0547</strong></td><td>26.2318</td><td>28.4476</td><td>27.2447</td></tr>
+                            <tr class="highlight-row"><td class="model-col border-col"><strong>+ MAGNET</strong></td><td class="border-col">COCO</td><td>27.0409</td><td><strong>26.2319</strong></td><td><strong>28.5553</strong></td><td><strong>27.2760</strong></td></tr>
+                        </tbody>
+                    </table>
+                    <p class="image-caption"><b>(a) CLIPScore on text-to-image generation benchmarks.</b> Mask alignment consistently improves alignment with text prompts across various datasets.</p>
+                </div>
+
+                <div class="table-container">
+                    <table class="advantages-table">
+                        <thead>
+                            <tr>
+                                <th class="model-col border-col" rowspan="2">Method</th>
+                                <th class="border-col" rowspan="2">Training</th>
+                                <th colspan="3">Attribute binding</th>
+                                <th class="border-col" colspan="3">Object relationships</th>
+                                <th rowspan="2">Num.</th>
+                                <th rowspan="2">Comp.</th>
+                            </tr>
+                            <tr>
+                                <th>Color</th>
+                                <th>Shape</th>
+                                <th>Texture</th>
+                                <th>2D</th>
+                                <th>3D</th>
+                                <th class="border-col" style="width:auto;">non</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="model-col border-col">Baseline</td><td class="border-col">--</td><td>0.7864</td><td>0.5644</td><td>0.7200</td><td><strong>0.2435</strong></td><td><strong>0.3318</strong></td><td><strong>0.3124</strong></td><td>0.5566</td><td>0.3719</td></tr>
+                            <tr class="highlight-row"><td class="model-col border-col"><strong>+ MAGNET</strong></td><td class="border-col">SA-1B</td><td>0.7836</td><td>0.5679</td><td>0.7252</td><td>0.2330</td><td>0.3151</td><td>0.3113</td><td>0.5460</td><td>0.3709</td></tr>
+                            <tr class="highlight-row"><td class="model-col border-col"><strong>+ MAGNET</strong></td><td class="border-col">COCO</td><td><strong>0.7919</strong></td><td><strong>0.5687</strong></td><td><strong>0.7260</strong></td><td>0.2301</td><td>0.3234</td><td>0.3120</td><td><strong>0.5584</strong></td><td><strong>0.3735</strong></td></tr>
+                        </tbody>
+                    </table>
+                    <p class="image-caption"><b>(b) T2I-Compbench++ performance.</b> Mask alignment enhances attribute binding, object relationships, and compositional understanding compared to the baseline.</p>
+                </div>
+
+
+            </section>
+
+            <section id="conclusion" class="section">
+                <h2>Conclusion</h2>
+
+                <p>In this work, we introduce Seg4Diff, a systematic analysis framework for multi-modal diffusion transformers that identifies semantic grounding expert layers capable of producing high-quality zero-shot segmentation masks. Our comprehensive analysis reveals that semantic alignment is an emergent property of diffusion transformers and can be selectively amplified through lightweight LoRA fine-tuning to improve both dense recognition and generative performance.</p>
+            </section>
+
+            <div class="citation add-top-padding">
+                <h1 id="citation">Citation</h1>
+                <p> If you use this work or find it helpful, please consider citing: </p>
+                <pre id="codecell0">@article{kim2025seg4diff,
+title={Seg4Diff: Unveiling Open-Vocabulary Segmentation in Text-to-Image Diffusion Transformers},
+author={Kim, Chaehyun and Shin, Heeseong and Hong, Eunbeen and Yoon, Heeji and Arnab, Anurag and Seo, Paul Hongsuck and Hong, Sunghwan and Kim, Seungryong},
+journal={arXiv preprint arXiv:2025.xxxxx},
+year={2025}
+}</pre>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p class="credit">Credit: The design of this project page is inspired by previous academic project pages, such as <a href="https://llm-grounded-diffusion.github.io/" target="_blank">LLM-grounded Diffusion</a> and <a href="https://describe-anything.github.io/" target="_blank">Describe-anything</a>.</p>
+        </div>
+    </footer>
+
+    <script>
+    function toggleMute(element) {
+        const video = element.parentElement.querySelector('video');
+        const icon = element.querySelector('i');
+        const text = element.querySelector('.unmute-text');
+        
+        if (video.muted) {
+            video.muted = false;
+            icon.className = 'fa fa-volume-up';
+            text.textContent = 'Mute';
+        } else {
+            video.muted = true;
+            icon.className = 'fa fa-volume-off';
+            text.textContent = 'Click to unmute';
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // 햄버거 메뉴 토글
+        const hamburger = document.querySelector('.hamburger');
+        const mainNav = document.querySelector('.main-nav');
+        hamburger.addEventListener('click', function() {
+            const expanded = hamburger.getAttribute('aria-expanded') === 'true';
+            hamburger.setAttribute('aria-expanded', !expanded);
+            mainNav.classList.toggle('nav-open');
+        });
+        const videos = document.querySelectorAll('video');
+        videos.forEach(video => {
+            video.addEventListener('play', function() {
+                const overlay = this.parentElement.querySelector('.unmute-overlay');
+                if (overlay) overlay.style.opacity = '0.8';
+            });
+            
+            video.addEventListener('pause', function() {
+                const overlay = this.parentElement.querySelector('.unmute-overlay');
+                if (overlay) overlay.style.opacity = '0.8';
+            });
+        });
+
+        // Initialize all slideshows
+        document.querySelectorAll('.slideshow-container').forEach(container => {
+            const slideshow = container.querySelector('.slideshow');
+            const slides = slideshow.querySelectorAll('.slide');
+            const prevButton = container.querySelector('.slideshow-nav.prev');
+            const nextButton = container.querySelector('.slideshow-nav.next');
+            const playPauseButton = container.querySelector('.play-pause');
+            
+            let currentSlide = 0;
+            let autoplayInterval;
+            let isPlaying = true;
+
+            function showSlide(n) {
+                slides.forEach(slide => slide.classList.remove('active'));
+                currentSlide = (n + slides.length) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }
+
+            function changeSlide(n) {
+                showSlide(currentSlide + n);
+                resetAutoplay();
+            }
+
+            function togglePlayPause() {
+                if (isPlaying) {
+                    clearInterval(autoplayInterval);
+                    playPauseButton.innerHTML = '<i class="fa fa-play"></i>';
+                } else {
+                    startAutoplay();
+                    playPauseButton.innerHTML = '<i class="fa fa-pause"></i>';
+                }
+                isPlaying = !isPlaying;
+            }
+
+            function startAutoplay() {
+                autoplayInterval = setInterval(() => {
+                    showSlide(currentSlide + 1);
+                }, 5000);
+            }
+
+            function resetAutoplay() {
+                clearInterval(autoplayInterval);
+                if (isPlaying) {
+                    startAutoplay();
+                }
+            }
+
+            // Initialize this slideshow
+            showSlide(0);
+            startAutoplay();
+
+            // Add event listeners
+            prevButton.addEventListener('click', () => changeSlide(-1));
+            nextButton.addEventListener('click', () => changeSlide(1));
+            playPauseButton.addEventListener('click', togglePlayPause);
+        });
+
+        // Handle main video play button
+        const mainVideo = document.querySelector('.main-video');
+        const playButton = document.querySelector('.play-button-overlay');
+        
+        if (mainVideo && playButton) {
+            // Click play button to play video
+            playButton.addEventListener('click', () => {
+                mainVideo.play();
+                mainVideo.classList.add('playing');
+            });
+
+            // Handle video play/pause events
+            mainVideo.addEventListener('play', () => {
+                mainVideo.classList.add('playing');
+            });
+
+            mainVideo.addEventListener('pause', () => {
+                mainVideo.classList.remove('playing');
+            });
+
+            mainVideo.addEventListener('ended', () => {
+                mainVideo.classList.remove('playing');
+            });
+        }
+
+        // -----------------------------
+        // 🖼️ Click-to-zoom Lightbox
+        // -----------------------------
+        // Build overlay once
+        const lightbox = document.createElement('div');
+        lightbox.className = 'lightbox-overlay';
+        lightbox.setAttribute('role', 'dialog');
+        lightbox.setAttribute('aria-modal', 'true');
+        lightbox.innerHTML = '<img alt="Expanded image">';
+        document.body.appendChild(lightbox);
+        const lightboxImg = lightbox.querySelector('img');
+
+        function openLightbox(src, alt) {
+            lightboxImg.src = src;
+            lightboxImg.alt = alt || '';
+            lightbox.classList.add('active');
+            document.body.classList.add('no-scroll');
+        }
+        function closeLightbox() {
+            lightbox.classList.remove('active');
+            document.body.classList.remove('no-scroll');
+            lightboxImg.src = '';
+        }
+
+        // Close on click anywhere or on Esc
+        lightbox.addEventListener('click', closeLightbox);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox();
+        });
+
+        // Mark target images as zoomable and wire up click
+        const zoomableImages = document.querySelectorAll('.image-container img, .slideshow img, .main-content img.img, .hero-section img.img');
+        zoomableImages.forEach(img => {
+            img.classList.add('zoomable');
+            img.addEventListener('click', () => {
+                // support optional high-res source via data-fullsrc
+                const src = img.getAttribute('data-fullsrc') || img.currentSrc || img.src;
+                openLightbox(src, img.alt);
+            });
+        });
+    });
+    </script>
+</body>
+</html>

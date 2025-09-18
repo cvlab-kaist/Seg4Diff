@@ -1,0 +1,7 @@
+transformers
+sentencepiece
+peft
+opencv-python
+einops
+scipy
+scikit-learn

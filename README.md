@@ -1,4 +1,4 @@
-# Seg4Diff: Unveiling Open-Vocabulary Segmentation in Text-to-Image Diffusion Transformers [arXiv 2025]
+# Seg4Diff: Unveiling Open-Vocabulary Segmentation in Text-to-Image Diffusion Transformers [NeurIPS 2025]
 
 
 <a href="https://arxiv.org/abs/XXXX"><img src="https://img.shields.io/badge/arXiv-XXXX"></a>

@@ -15,7 +15,6 @@ by [Chaehyun Kim<sup>1</sup>](https://kchyun.github.io/),
 [Paul Hongsuck Seo<sup>2</sup>](https://phseo.github.io/), 
 [Sunghwan Hong<sup>3</sup>](https://sunghwanhong.github.io/), 
 [Seungryong Kim<sup>1</sup>](https://cvlab.kaist.ac.kr/members/faculty) <br>
-(<sup>†</sup>: Co-corresponding authors)  
 
 <sup>1</sup> KAIST AI, <sup>2</sup> Korea University, <sup>3</sup> ETH Zürich
 
@@ -24,18 +23,18 @@ by [Chaehyun Kim<sup>1</sup>](https://kchyun.github.io/),
 
 **Seg4Diff** is a systematic framework that analyzes and enhances the emergent semantic grounding capabilities of multi-modal diffusion transformers (MM-DiTs). We discover that specific intermediate layers, which we term **semantic grounding expert layers**, naturally produce high-quality zero-shot segmentation masks by aligning text tokens with corresponding image regions. Building on this insight, we introduce a lightweight LoRA fine-tuning method, **Mask Alignment (MA)**, to further refine this alignment, simultaneously improving both open-vocabulary segmentation and text-to-image generation quality.
 
-For further details and visualization results, please check out our [paper]() and our [project page]().
+For further details and visualization results, please check out our [paper]() and our [project page](https://cvlab-kaist.github.io/Seg4Diff).
 
 ## Installation
 Please follow [installation](INSTALL.md). 
 
 ## Data Preparation
-We largely follow [PixelCLIP]()'s dataset preparation procedure. Please refer to [dataset preperation](datasets/README.md).
+We largely follow [PixelCLIP](https://github.com/cvlab-kaist/PixelCLIP)'s dataset preparation procedure. Please refer to [dataset preperation](datasets/README.md).
 
 ## Zero-shot Evaluation
 <!-- ![](assets/zeroshot_arch.png) -->
 
-`eval_*.sh` automatically evaluates the model following our evaluation protocol, with pre-trained [Stable Diffusion 3 (SD3)]() by default. To use different models like [Stable Diffusion 3.5]() or [Flux.1-dev](), add options to specify the backbone. The weights will be downloaded automatically in the first execution.
+`eval_*.sh` automatically evaluates the model following our evaluation protocol, with pre-trained [Stable Diffusion 3 (SD3)](https://huggingface.co/stabilityai/stable-diffusion-3-medium) by default. To use different models like [Stable Diffusion 3.5](https://huggingface.co/stabilityai/stable-diffusion-3.5-medium) or [Flux.1-dev](https://huggingface.co/black-forest-labs/FLUX.1-dev), add options to specify the backbone. The weights will be downloaded automatically in the first execution.
 
 ### Evaluation script
 ```bash

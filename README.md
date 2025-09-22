@@ -21,7 +21,7 @@ by [Chaehyun Kim<sup>1</sup>](https://kchyun.github.io/),
 ## Introduction
 ![](assets/teaser.png)
 
-**Seg4Diff** is a systematic framework that analyzes and enhances the emergent semantic grounding capabilities of multi-modal diffusion transformers (MM-DiTs). We discover that specific intermediate layers, which we term **semantic grounding expert layers**, naturally produce high-quality zero-shot segmentation masks by aligning text tokens with corresponding image regions. Building on this insight, we introduce a lightweight LoRA fine-tuning method, **Mask Alignment (MA)**, to further refine this alignment, simultaneously improving both open-vocabulary segmentation and text-to-image generation quality.
+**Seg4Diff** is a systematic framework that analyzes and enhances the emergent semantic grounding capabilities of multi-modal diffusion transformers (MM-DiTs). We discover that specific intermediate layers, which we term **semantic grounding expert layers**, naturally produce high-quality zero-shot segmentation masks by aligning text tokens with corresponding image regions. Building on this insight, we introduce a lightweight LoRA fine-tuning method, **Mask Alignment for Segmentation and Generation (MAGNET)**, to further refine this alignment, simultaneously improving both open-vocabulary segmentation and text-to-image generation quality.
 
 For further details and visualization results, please check out our [paper]() and our [project page](https://cvlab-kaist.github.io/Seg4Diff).
 

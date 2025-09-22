@@ -13,8 +13,8 @@ by [Chaehyun Kim<sup>1</sup>](https://kchyun.github.io/),
 [Heeji Yoon<sup>1</sup>](https://yoon-heez.github.io/), 
 [Anurag Arnab](https://anuragarnab.github.io/), 
 [Paul Hongsuck Seo<sup>2</sup>](https://phseo.github.io/), 
-[Sunghwan Hong<sup>&dagger;,3</sup>](https://sunghwanhong.github.io/), 
-[Seungryong Kim<sup>&dagger;,1</sup>](https://cvlab.kaist.ac.kr/members/faculty) <br>
+[Sunghwan Hong<sup>3,&dagger;</sup>](https://sunghwanhong.github.io/), 
+[Seungryong Kim<sup>1,&dagger;</sup>](https://cvlab.kaist.ac.kr/members/faculty) <br>
 
 <sup>1</sup> KAIST AI, <sup>2</sup> Korea University, <sup>3</sup> ETH Zürich <br>
 (<sup>&dagger;</sup>Co-Corresponding Author)

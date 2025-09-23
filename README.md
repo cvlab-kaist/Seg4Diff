@@ -1,8 +1,8 @@
 # Seg4Diff: Unveiling Open-Vocabulary Segmentation in Text-to-Image Diffusion Transformers [NeurIPS 2025]
 
 
-<a href="https://arxiv.org/abs/XXXX"><img src="https://img.shields.io/badge/arXiv-XXXX"></a>
-<a href="https://cvlab-kaist.github.io/Seg4Diff"><img src="https://img.shields.io/badge/Project%20Page-online-brightgreen"></a>  
+<a href="https://arxiv.org/abs/2509.18096"><img src="https://img.shields.io/badge/arXiv-2509.18096-b31b1b"></a>
+<a href="https://cvlab-kaist.github.io/Seg4Diff"><img src="https://img.shields.io/badge/Project%20Page-online-brightgreen"></a>   
 
 This is the official implementation of Seg4Diff.
 <br>
@@ -98,5 +98,13 @@ sh eval_ovss.sh ./configs/eval_ovss.yaml 1 ./output/ovss MODEL.WEIGHTS LORA_PATH
 ## Citing Seg4Diff
 
 ```BibTeX
-
+@misc{kim2025seg4diffunveilingopenvocabularysegmentation,
+      title={Seg4Diff: Unveiling Open-Vocabulary Segmentation in Text-to-Image Diffusion Transformers}, 
+      author={Chaehyun Kim and Heeseong Shin and Eunbeen Hong and Heeji Yoon and Anurag Arnab and Paul Hongsuck Seo and Sunghwan Hong and Seungryong Kim},
+      year={2025},
+      eprint={2509.18096},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2509.18096}, 
+}
 ```

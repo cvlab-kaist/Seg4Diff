@@ -8,6 +8,8 @@ from diffusers.schedulers.scheduling_flow_match_euler_discrete import FlowMatchE
 from diffusers.pipelines.stable_diffusion_3.pipeline_stable_diffusion_3 import retrieve_timesteps
 from diffusers.utils.torch_utils import randn_tensor
 from peft import LoraConfig, set_peft_model_state_dict
+from safetensors import SafetensorError
+from safetensors.torch import load_file
 from detectron2.modeling import BACKBONE_REGISTRY, Backbone, ShapeSpec
 from diffusers.training_utils import compute_density_for_timestep_sampling, compute_loss_weighting_for_sd3
 
@@ -103,7 +105,12 @@ class SD3Backbone(Backbone):
                     return new_state_dict
 
                 print("Loading LoRA weights from", cfg.MODEL.BACKBONE.LORA_WEIGHTS)
-                state_dict = torch.load(cfg.MODEL.BACKBONE.LORA_WEIGHTS, map_location="cpu")
+                try:
+                    # the released lora_weights.pth files are in safetensors format
+                    state_dict = {'model': load_file(cfg.MODEL.BACKBONE.LORA_WEIGHTS, device="cpu")}
+                except SafetensorError:
+                    # checkpoints saved by training (torch.save)
+                    state_dict = torch.load(cfg.MODEL.BACKBONE.LORA_WEIGHTS, map_location="cpu")
 
                 prefix = "backbone.transformer."
                 state_dict['model'] = preprocess_state_dict(state_dict['model'], prefix)
